@@ -1,6 +1,6 @@
-# OW map picker
+# Overwatch map picker
 
-A quick-and-dirty map pick built for [CCLAN](https://cclan.se) and [NymbLAN](https://nymblan.se).
+A quick-and-dirty map picker for Overwatch, built for [CCLAN](https://cclan.se) and [NymbLAN](https://nymblan.se).
 
 ## Map pick rules
 
