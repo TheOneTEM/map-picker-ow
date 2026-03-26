@@ -1,9 +1,9 @@
 use core::fmt;
-use std::fs::File;
-use std::io::{self, BufRead, BufReader, Write};
-use std::thread::current;
+use std::{fs::File, io::{self, BufRead, BufReader}};
 use clap::Parser;
 use rand::seq::SliceRandom;
+
+
 #[derive(Clone, PartialEq)]
 enum GameMode {
     Assault,
@@ -15,6 +15,7 @@ enum GameMode {
     Control,
 }
 impl GameMode {
+    #[inline]
     fn from_string(s: String) -> Option<GameMode> {
         match s.to_ascii_lowercase() {
             val if val == "assault" => Some(Self::Assault),
@@ -28,7 +29,8 @@ impl GameMode {
         }
     }
     #[inline]
-    fn is_sided(self) -> bool {
+    #[allow(dead_code, clippy::wrong_self_convention)]
+    fn is_asymmetric(self) -> bool {
         matches!(self, Self::Assault | Self::Escort | Self::Hybrid)
     }
 }
@@ -52,6 +54,7 @@ struct OWMap {
     game_mode: GameMode,
 }
 impl OWMap {
+    #[allow(clippy::ptr_arg)]
     fn from_vec_string(v: &Vec<String>) -> Self {
         if v.len() != 2 {
             panic!("Vec length mismatch while converting Vec<String> to OWMap. Expected 2, got {}", v.len())
