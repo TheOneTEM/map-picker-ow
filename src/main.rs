@@ -1,8 +1,8 @@
 use core::fmt;
 use std::fs::File;
 use std::io::{self, BufRead, BufReader};
+use clap::Parser;
 use rand::seq::SliceRandom;
-
 enum GameMode {
     Assault,
     Payload,
@@ -27,19 +27,20 @@ impl GameMode {
     fn is_sided(self) -> bool {
         matches!(self, Self::Assault | Self::Payload | Self::Hybrid)
     }
-    fn to_string(&self) -> String {
+}
+impl fmt::Display for GameMode {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> Result<(), fmt::Error> {
         match self {
-            Self::Assault => "assault",
-            Self::Payload => "payload",
-            Self::Hybrid => "hybrid",
-            Self::Flashpoint => "flashpoint",
-            Self::Push => "push",
-            Self::Clash => "clash"
+            Self::Assault => write!(f, "assault"),
+            Self::Payload => write!(f, "payload"),
+            Self::Hybrid => write!(f, "hybrid"),
+            Self::Flashpoint => write!(f, "flashpoint"),
+            Self::Push => write!(f, "push"),
+            Self::Clash => write!(f, "clash")
 
-        }.to_string()
+        }
     }
 }
-
 
 fn read_lines_to_vec(filename: &str) -> io::Result<Vec<String>> {
     let file = File::open(filename)?;
@@ -52,10 +53,17 @@ fn read_lines_to_vec(filename: &str) -> io::Result<Vec<String>> {
 
     Ok(lines)
 }
+#[derive(Parser, Debug)]
+struct Options {
+    input_file: String, 
+}
 
 fn main() -> io::Result<()> {
+
+    let args = Options::parse();
+
     let mut rng = rand::rng();
-    let filename = "maps.txt";
+    let filename = &args.input_file;
 
     let mut lines = read_lines_to_vec(filename)?;
     lines.shuffle(&mut rng);
