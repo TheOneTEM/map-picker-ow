@@ -1,6 +1,7 @@
 use core::fmt;
 use std::fs::File;
 use std::io::{self, BufRead, BufReader, Write};
+use std::thread::current;
 use clap::Parser;
 use rand::seq::SliceRandom;
 #[derive(Clone, PartialEq)]
@@ -109,11 +110,18 @@ fn main() -> io::Result<()> {
     let mut round_counter = 0;
     loop {
         round_counter += 1;
+
+        // filter currently pickable maps
         let mut currently_available_maps = all_available_maps.clone();
         if let Some(ref mode) = last_gamemode {
             currently_available_maps.retain(|m| m.game_mode != *mode);
         }
 
+        if currently_available_maps.is_empty() {
+            currently_available_maps = all_available_maps.clone()
+        }
+
+        // print currently available maps
         let available_maps_text = "Map ".to_owned() + &round_counter.to_string() + ". " + &currently_available_maps.len().to_string() + " maps available: ";
         let separator = "=".to_string();
         let mut separator_line = "".to_string();
@@ -127,21 +135,44 @@ fn main() -> io::Result<()> {
         for (idx, map) in currently_available_maps.iter().enumerate() {
             println!("{idx}: {map}")
         }
-        print!("{}\nSelect map (0-{}) > ", separator_line, currently_available_maps.len()-1);
-        let _ = io::stdout().flush();
 
-        let mut input = String::new();
-        io::stdin()
-            .read_line(&mut input)
-            .expect("Failed to read line");
+        // let user select map
+        use std::io::{self, Write};
 
-        let picked_map = currently_available_maps.remove(input.trim_end().parse().expect("Invalid input: Must be an integer between 0 and 8"));
+        loop {
+            print!(
+                "{}\nSelect map (0-{}) > ",
+                separator_line,
+                currently_available_maps.len() - 1
+            );
+            io::stdout().flush().unwrap();
 
-        all_available_maps.retain(|m| *m != picked_map);
+            let mut input = String::new();
+            if io::stdin().read_line(&mut input).is_err() {
+                println!("Failed to read input. Try again.");
+                continue;
+            }
 
-        last_gamemode = Some(picked_map.game_mode);
-        println!("{separator_line}");
+            let index: usize = match input.trim().parse() {
+                Ok(num) => num,
+                Err(_) => {
+                    println!("Invalid input: please enter a number.");
+                    continue;
+                }
+            };
 
+            if index >= currently_available_maps.len() {
+                println!("Out of bounds. Please enter a number in range.");
+                continue;
+            }
 
+            let picked_map = currently_available_maps.remove(index);
+
+            all_available_maps.retain(|m| *m != picked_map);
+            last_gamemode = Some(picked_map.game_mode);
+
+            println!("{separator_line}\n");
+            break;
+        }
     }
 }
