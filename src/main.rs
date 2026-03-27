@@ -37,9 +37,9 @@ impl GameMode {
 impl fmt::Display for GameMode {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> Result<(), fmt::Error> {
         match self {
-            Self::Assault => write!(f, "assault"),
-            Self::Escort => write!(f, "escort"),
-            Self::Hybrid => write!(f, "hybrid"),
+            Self::Assault => write!(f, "assault (Attack-Defense)"),
+            Self::Escort => write!(f, "escort (Attack-Defense)"),
+            Self::Hybrid => write!(f, "hybrid (Attack-Defense)"),
             Self::Flashpoint => write!(f, "flashpoint"),
             Self::Push => write!(f, "push"),
             Self::Clash => write!(f, "clash"),
