@@ -8,6 +8,15 @@ A quick-and-dirty map picker for Overwatch, built for [CCLAN](https://cclan.se) 
 * The same game mode cannot be chosen twice in a row unless there are no maps of another game mode available in the pool.
 * Picked maps are removed from the pool.
 
+## Install guide
+
+Using [Git](https://git-scm.com/):
+
+```powershell
+git clone https://github.com/theonetem/map-picker-ow.git
+cd map-picker-ow
+```
+
 ## Usage guide
 
 Using Cargo:
