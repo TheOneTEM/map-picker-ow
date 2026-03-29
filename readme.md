@@ -17,7 +17,7 @@ git clone https://github.com/theonetem/map-picker-ow.git
 cd map-picker-ow
 ```
 
-## Usage guide
+## Basic usage guide
 
 Using Cargo:
 
@@ -25,7 +25,23 @@ Using Cargo:
 cargo run --release -- <your-map-pool.csv>
 ```
 
-The program takes in a map pool in CSV format. Make sure that it has >=9 entries.
+Replace `<your-map-pool.csv>` with `ow-maps.csv` for the NymbLAN map pool as used for NymbLAN 2026.
+
+The program takes in a map pool in CSV format. Make sure that it has >=9 entries and that there are no spaces between the entries in the CSV.
+
+Wrong:
+
+```csv
+Hanamura, Assault
+```
+
+Correct:
+
+```csv
+Hanamura,Assault
+```
+
+For the default 
 
 ## Map pool
 
