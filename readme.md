@@ -41,8 +41,6 @@ Correct:
 Hanamura,Assault
 ```
 
-For the default 
-
 ## Map pool
 
 Use `ow-maps.csv` as an example when creating your own map pool.

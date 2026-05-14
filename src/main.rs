@@ -1,79 +1,18 @@
-use core::fmt;
-use std::{fs::File, io::{self, BufRead, BufReader}};
+pub mod gamemode;
+pub mod overwatchmap;
+use std::{fs::File, io::{BufRead, BufReader}};
 use clap::Parser;
 use rand::seq::SliceRandom;
+use crate::{gamemode::GameMode, overwatchmap::OWMap};
 
 
-#[derive(Clone, PartialEq)]
-enum GameMode {
-    Assault,
-    Escort,
-    Hybrid,
-    Flashpoint, 
-    Push,
-    Clash,
-    Control,
-}
-impl GameMode {
-    #[inline]
-    fn from_string(s: String) -> Option<GameMode> {
-        match s.to_ascii_lowercase() {
-            val if val == "assault" => Some(Self::Assault),
-            val if  val == "escort" => Some(Self::Escort),
-            val if val == "hybrid" => Some(Self::Hybrid),
-            val if val == "flashpoint" => Some(Self::Flashpoint),
-            val if val == "push" => Some(Self::Push),
-            val if val == "clash" => Some(Self::Clash),
-            val if val == "control" => Some(Self::Control),
-            _ => None
-        }
-    }
-    #[inline]
-    #[allow(dead_code, clippy::wrong_self_convention)]
-    fn is_asymmetric(self) -> bool {
-        matches!(self, Self::Assault | Self::Escort | Self::Hybrid)
-    }
-}
-impl fmt::Display for GameMode {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> Result<(), fmt::Error> {
-        match self {
-            Self::Assault => write!(f, "assault (Attack-Defense)"),
-            Self::Escort => write!(f, "escort (Attack-Defense)"),
-            Self::Hybrid => write!(f, "hybrid (Attack-Defense)"),
-            Self::Flashpoint => write!(f, "flashpoint"),
-            Self::Push => write!(f, "push"),
-            Self::Clash => write!(f, "clash"),
-            Self::Control => write!(f, "control"),
-
-        }
-    }
-}
-#[derive(Clone, PartialEq)]
-struct OWMap {
-    name: String,
-    game_mode: GameMode,
-}
-impl OWMap {
-    #[allow(clippy::ptr_arg)]
-    fn from_vec_string(v: &Vec<String>) -> Self {
-        if v.len() != 2 {
-            panic!("Vec length mismatch while converting Vec<String> to OWMap. Expected 2, got {}", v.len())
-        }
-        OWMap { name: v[0].clone(), game_mode: GameMode::from_string(v[1].clone()).expect("Bad gamemode") }
-    }
-}
-impl fmt::Display for OWMap {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> Result<(), fmt::Error> {
-        write!(f, "{} ({})", self.name, self.game_mode)
-    }
-}
-fn read_lines_to_vec(filename: &str) -> io::Result<Vec<OWMap>> {
-    let file = File::open(filename)?;
+fn read_lines_to_vec(filename: &str) -> Result<Vec<OWMap>, ()> {
+    let file = File::open(filename).unwrap();
     let reader = BufReader::new(file);
  
     let mut lines = Vec::new();
     for line in reader.lines() {
-        lines.push(line?);
+        lines.push(line.unwrap());
     }
     // removing the first element becuase csv title
     lines.remove(0);
@@ -98,14 +37,12 @@ struct Options {
     input_file: String, 
 }
 
-fn main() -> io::Result<()> {
-
+fn main() {
     let args = Options::parse();
 
     let mut rng = rand::rng();
     let filename = &args.input_file;
-
-    let mut lines = read_lines_to_vec(filename)?;
+    let mut lines = read_lines_to_vec(filename).unwrap();
     lines.shuffle(&mut rng);
     let mut all_available_maps: Vec<OWMap> = lines[..9].to_vec();
 
