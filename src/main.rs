@@ -1,6 +1,7 @@
 pub mod gamemode;
+pub mod state_machine;
 pub mod overwatchmap;
-use std::{fs::File, io::{BufRead, BufReader}};
+use std::{fs::File, io::{self, Write, BufRead, BufReader}};
 use clap::Parser;
 use rand::seq::SliceRandom;
 use crate::{gamemode::GameMode, overwatchmap::OWMap};
@@ -14,7 +15,7 @@ fn read_lines_to_vec(filename: &str) -> Result<Vec<OWMap>, ()> {
     for line in reader.lines() {
         lines.push(line.unwrap());
     }
-    // removing the first element becuase csv title
+    // removing the first element because csv title
     lines.remove(0);
     Ok(
         lines.iter()
@@ -77,7 +78,6 @@ fn main() {
         }
 
         // let user select map
-        use std::io::{self, Write};
 
         loop {
             print!(
